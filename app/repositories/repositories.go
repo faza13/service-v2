@@ -2,18 +2,18 @@ package repositories
 
 import (
 	"service/app/repositories/user"
-	"service/pkg/datastore/mariadb"
+	"service/pkg/datastore/orm"
 )
 
 type Repositories struct {
-	Transactor  mariadb.ITransactor
+	Transactor  orm.ITransactor
 	UserDB      *user.UserDB
 	UserElastic *user.UserElasticRepo
 }
 
-func NewRepositories(db mariadb.IDatabase) *Repositories {
+func NewRepositories(db orm.IDatabase) *Repositories {
 	return &Repositories{
-		Transactor:  mariadb.NewTransactor(db),
+		Transactor:  orm.NewTransactor(db),
 		UserDB:      user.NewUserRepo(db),
 		UserElastic: user.NewUserElasticRepo(),
 	}

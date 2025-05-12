@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
+	"log"
 	"net/http"
 	"service/app/controllers/restapi"
 	"service/app/middlewares"
@@ -27,20 +27,7 @@ func RunHTTPServer(
 
 	//tracing otel middleware
 	if tracer != nil {
-		r.Use(func(c *gin.Context) {
-			otelCtx := otel.InjectTracing(c, tracer, "")
-			name := fmt.Sprintf("[%s] %s", c.Request.Method, c.Request.URL.Path)
-			ctxStart, span := otel.AddSpan(otelCtx, name)
-			defer span.End()
-			span.SetAttributes(attribute.KeyValue{
-				Key:   "tes",
-				Value: attribute.Value{},
-			})
-
-			c.Request = c.Request.WithContext(ctxStart)
-
-			c.Next()
-		})
+		r.Use(traceMiddleware(tracer))
 	}
 
 	setupMiddlewares(r)
@@ -60,7 +47,7 @@ func RunHTTPServer(
 	}
 
 	if err := s.ListenAndServe(); err != nil {
-		panic(err)
+		log.Fatal(fmt.Sprintf("failed to start server: %v", err))
 	}
 }
 
@@ -68,8 +55,15 @@ func setupMiddlewares(route *gin.Engine) {
 
 }
 
-func guidMiddleware(tracer trace.Tracer) gin.HandlerFunc {
+func traceMiddleware(tracer trace.Tracer) gin.HandlerFunc {
+
 	return func(c *gin.Context) {
+		otelCtx := otel.InjectTracing(c, tracer, "")
+		name := fmt.Sprintf("[%s] %s", c.Request.Method, c.Request.URL.Path)
+		ctxStart, span := otel.AddSpan(otelCtx, name)
+		defer span.End()
+		c.Request = c.Request.WithContext(ctxStart)
+
 		c.Next()
 	}
 }

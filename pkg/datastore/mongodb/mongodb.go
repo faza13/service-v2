@@ -18,7 +18,7 @@ func New(dbCfg *config.Database) *Orm {
 		dbCfg.Password,
 		dbCfg.Host,
 		dbCfg.Port,
-		dbCfg.Database)
+		dbCfg.Name)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)

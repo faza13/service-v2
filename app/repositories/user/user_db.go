@@ -2,14 +2,14 @@ package user
 
 import (
 	"context"
-	"service/pkg/datastore/mariadb"
+	"service/pkg/datastore/orm"
 )
 
 type UserDB struct {
-	db mariadb.IDatabase
+	db orm.IDatabase
 }
 
-func NewUserRepo(db mariadb.IDatabase) *UserDB {
+func NewUserRepo(db orm.IDatabase) *UserDB {
 	return &UserDB{
 		db: db,
 	}

@@ -16,7 +16,6 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"go.opentelemetry.io/otel/trace/noop"
 	"net/http"
-	"service/pkg/logger"
 	"time"
 )
 
@@ -29,7 +28,7 @@ type Config struct {
 }
 
 // InitTracing configures open telemetry to be used with the service.
-func InitTracing(log *logger.Logger, cfg Config) (trace.TracerProvider, func(ctx context.Context), error) {
+func InitTracing(cfg Config) (trace.TracerProvider, func(ctx context.Context), error) {
 
 	// WARNING: The current settings are using defaults which may not be
 	// compatible with your project. Please review the documentation for
@@ -51,12 +50,9 @@ func InitTracing(log *logger.Logger, cfg Config) (trace.TracerProvider, func(ctx
 
 	switch cfg.Host {
 	case "":
-		log.Info(context.Background(), "OTEL", "tracer", "NOOP")
 		traceProvider = noop.NewTracerProvider()
 
 	default:
-		log.Info(context.Background(), "OTEL", "tracer", cfg.Host)
-
 		tp := sdktrace.NewTracerProvider(
 			sdktrace.WithSampler(sdktrace.ParentBased(newEndpointExcluder(cfg.ExcludedRoutes, cfg.Probability))),
 			sdktrace.WithBatcher(exporter,

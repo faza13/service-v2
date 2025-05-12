@@ -24,13 +24,7 @@ func runMessageBroker(
 	handler *broker.BrokerHandler,
 ) {
 
-	go func(
-		ctx context.Context,
-		cfg *config.Kafka,
-		sub *kafkasdk.Subscriber,
-		pub *kafkasdk.Publisher,
-		handler *broker.BrokerHandler) {
-
+	go func() {
 		kafka.NewMessageBroker(
 			ctx,
 			cfg,
@@ -39,5 +33,5 @@ func runMessageBroker(
 			handler,
 			routerBroker.NewUserBroker)
 
-	}(ctx, cfg, sub, pub, handler)
+	}()
 }
