@@ -12,7 +12,7 @@ type Orm struct {
 }
 
 func NewProvider(cfg *config.Database) *Orm {
-	if cfg.Driver == "mariadb" {
+	if cfg.Driver == "mariadb" || cfg.Driver == "mysql" {
 		return newMysql(cfg)
 	}
 

@@ -16,6 +16,7 @@ func NewConfig() Config {
 			Environment: "development",
 		},
 		Database: Database{
+			Driver:   "mariadb",
 			Host:     "localhost",
 			Port:     "3306",
 			User:     "root",

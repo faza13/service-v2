@@ -10,10 +10,12 @@ import (
 	"service/app/usecases"
 	"service/config"
 	"service/pkg/datastore/orm"
+	"service/pkg/message_broker/kafka"
 	"service/pkg/otel"
 	"service/pkg/server"
 	"service/pkg/setting"
 	"service/routes/api"
+	brokerRouter "service/routes/broker"
 )
 
 func StartApp(ctx context.Context) {
@@ -46,8 +48,14 @@ func StartApp(ctx context.Context) {
 	pub, sub := setupKafka(ctx, &cfg.Kafka)
 	defer pub.Close()
 
-	// run message broker
-	runMessageBroker(ctx, &cfg.Kafka, pub, sub, brokerHandler)
+	//run message broker
+	go kafka.NewMessageBroker(
+		ctx,
+		&cfg.Kafka,
+		pub,
+		sub,
+		brokerHandler,
+		brokerRouter.NewUserBroker)
 
 	// run http server
 	server.RunHTTPServer(ctx, &cfg.Router, tracer, rest, mid, api.NewUserApi, api.NewPermissionApi)
