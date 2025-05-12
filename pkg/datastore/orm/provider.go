@@ -12,13 +12,13 @@ type Orm struct {
 }
 
 func NewProvider(cfg *config.Database) *Orm {
-	//if cfg.Driver == "mariadb" {
-	//	return newMysql(cfg)
-	//}
-	//
-	//if cfg.Driver == "postgres" {
-	//	return newPostgres(cfg)
-	//}
+	if cfg.Driver == "mariadb" {
+		return newMysql(cfg)
+	}
+
+	if cfg.Driver == "postgres" {
+		return newPostgres(cfg)
+	}
 
 	log.Fatal("not support database driver")
 	return nil
