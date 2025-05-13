@@ -5,8 +5,8 @@ import (
 	"sync"
 )
 
-var PoolSingleFlight = sync.Pool{
+var SingleFlightPool = sync.Pool{
 	New: func() interface{} {
-		return singleflight.Group{}
+		return new(singleflight.Group)
 	},
 }

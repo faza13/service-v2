@@ -9,6 +9,7 @@ import (
 	"service/app/repositories"
 	"service/app/usecases"
 	"service/config"
+	"service/pkg/cache"
 	"service/pkg/datastore/orm"
 	"service/pkg/message_broker/kafka"
 	"service/pkg/otel"
@@ -23,7 +24,9 @@ func StartApp(ctx context.Context) {
 	setting.NewSetting(&cfg)
 
 	db := orm.NewProvider(&cfg.Database)
-	repo := repositories.NewRepositories(db)
+	cache := cache.NewCache(ctx, &cfg)
+
+	repo := repositories.NewRepositories(db, cache)
 	uc := usecases.NewUsecase(repo)
 	rest := restapi.NewRestapi(uc)
 	mid := middlewares.NewMiddlewares()

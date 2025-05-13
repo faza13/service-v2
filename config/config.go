@@ -7,6 +7,8 @@ type Config struct {
 	Router   Router   `json:"router"`
 	Kafka    Kafka    `json:"kafka"`
 	Setting  Setting  `json:"setting"`
+	Cache    Cache    `json:"cache"`
+	Redis    Redis    `json:"redis"`
 }
 
 func NewConfig() Config {
@@ -36,6 +38,13 @@ func NewConfig() Config {
 		},
 		Setting: Setting{
 			QueueProgram: "1",
+		},
+		Cache: Cache{
+			Driver: "redis",
+		},
+		Redis: Redis{
+			Name: "0",
+			Host: "127.0.0.1:6379",
 		},
 	}
 }
