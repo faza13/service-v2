@@ -8,6 +8,9 @@ import (
 
 func NewUserApi(r *gin.RouterGroup, rest *restapi.Restapi, mid *middlewares.Middlewares) {
 	api := r.Group("/user")
+
+	api.POST("/register", rest.UserHandler.Register)
+
 	noAuth := api.Group("/data")
 	{
 		noAuth.GET("", rest.UserHandler.List)

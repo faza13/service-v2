@@ -11,6 +11,8 @@ type Orm struct {
 	db *gorm.DB
 }
 
+var _ IDatabase = &Orm{}
+
 func NewProvider(cfg *config.Database) *Orm {
 	if cfg.Driver == "mariadb" || cfg.Driver == "mysql" {
 		return newMysql(cfg)

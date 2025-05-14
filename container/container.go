@@ -10,6 +10,7 @@ import (
 	"service/app/usecases"
 	"service/config"
 	"service/pkg/cache"
+	"service/pkg/datastore/elastic"
 	"service/pkg/datastore/orm"
 	"service/pkg/message_broker/kafka"
 	"service/pkg/otel"
@@ -25,8 +26,9 @@ func StartApp(ctx context.Context) {
 
 	db := orm.NewProvider(&cfg.Database)
 	cache := cache.NewCache(ctx, &cfg)
+	esClient := elastic.NewElasticClient(ctx, &cfg)
 
-	repo := repositories.NewRepositories(db, cache)
+	repo := repositories.NewRepositories(db, cache, esClient)
 	uc := usecases.NewUsecase(repo)
 	rest := restapi.NewRestapi(uc)
 	mid := middlewares.NewMiddlewares()

@@ -6,6 +6,7 @@ import (
 	"github.com/go-redsync/redsync/v4/redis/goredis/v9"
 	"github.com/redis/go-redis/v9"
 	"service/config"
+	"service/pkg/cache"
 	"strconv"
 	"time"
 )
@@ -23,6 +24,8 @@ func (r *Redis) Set(ctx context.Context, key string, data interface{}, second in
 	statusCmd := r.rdb.Set(ctx, key, data, time.Second*time.Duration(second))
 	return statusCmd.Err()
 }
+
+var _ cache.ICache = &Redis{}
 
 func (r *Redis) Lock(ctx context.Context, key string, ttl int64, proses func(ctx context.Context) error) error {
 	cfgExpiry := redsync.WithExpiry(time.Duration(ttl) * time.Second)

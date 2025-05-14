@@ -1,11 +1,15 @@
 package user
 
+import "service/pkg/datastore/orm"
+
 type UserUsecase struct {
-	userRepo IUserRepo
+	transactor orm.ITransactor
+	userRepo   IUserRepo
 }
 
-func NewUserUsecase(userRepo IUserRepo) *UserUsecase {
+func NewUserUsecase(transaaction orm.ITransactor, userRepo IUserRepo) *UserUsecase {
 	return &UserUsecase{
-		userRepo: userRepo,
+		transactor: transaaction,
+		userRepo:   userRepo,
 	}
 }

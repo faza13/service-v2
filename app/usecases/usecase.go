@@ -11,6 +11,6 @@ type Usecase struct {
 
 func NewUsecase(repositories *repositories.Repositories) *Usecase {
 	return &Usecase{
-		UserUsecase: user.NewUserUsecase(repositories.UserDB),
+		UserUsecase: user.NewUserUsecase(repositories.Transactor, repositories.UserDB),
 	}
 }

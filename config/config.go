@@ -9,6 +9,7 @@ type Config struct {
 	Setting  Setting  `json:"setting"`
 	Cache    Cache    `json:"cache"`
 	Redis    Redis    `json:"redis"`
+	Elastic  Elastic  `json:"elastic"`
 }
 
 func NewConfig() Config {
@@ -45,6 +46,9 @@ func NewConfig() Config {
 		Redis: Redis{
 			Name: "0",
 			Host: "127.0.0.1:6379",
+		},
+		Elastic: Elastic{
+			Host: "localhost:9200",
 		},
 	}
 }

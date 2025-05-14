@@ -1,8 +1,10 @@
 package repositories
 
 import (
+	"github.com/elastic/go-elasticsearch/v9"
 	"service/app/repositories/user"
-	loc "service/pkg/cache"
+	"service/pkg/cache"
+	pkg_elastic "service/pkg/datastore/elastic"
 	"service/pkg/datastore/orm"
 )
 
@@ -13,11 +15,12 @@ type Repositories struct {
 	UserElastic *user.UserElasticRepo
 }
 
-func NewRepositories(db orm.IDatabase, Cache cache.ICache) *Repositories {
+func NewRepositories(db orm.IDatabase, Cache cache.ICache, elastic *elasticsearch.Client) *Repositories {
+	userIdxElastic := pkg_elastic.NewElastic(elastic, "sekolahmu_user")
 	return &Repositories{
 		Cache:       Cache,
 		Transactor:  orm.NewTransactor(db),
 		UserDB:      user.NewUserRepo(db),
-		UserElastic: user.NewUserElasticRepo(),
+		UserElastic: user.NewUserElasticRepo(userIdxElastic),
 	}
 }

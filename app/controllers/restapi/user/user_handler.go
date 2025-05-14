@@ -23,3 +23,20 @@ func (h *UserHandler) List(c *gin.Context) {
 
 	c.JSON(200, data)
 }
+
+func (h *UserHandler) Register(c *gin.Context) {
+	ctx, span := otel.AddSpan(c.Request.Context(), "user.get")
+	defer span.End()
+
+	req := RegistrationRequest{}
+
+	err := c.Bind(&req)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	data := h.userUsecase.Register(ctx, &req)
+
+	c.JSON(200, data)
+}
