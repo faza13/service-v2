@@ -5,6 +5,32 @@
 * docker run -p 3000:3000 -p 4317:4317 -p 4318:4318 --rm -ti grafana/otel-lgtm
 * docker run -p 9092:9092 --rm -ti apache/kafka:latest
 
+## Directory Structure
+```
+service/
+├── app/                    # Application code
+│   ├── controllers/        # Handle external requests
+│   │   ├── broker/         # Message broker handlers
+│   │   ├── grpc/           # gRPC handlers
+│   │   └── restapi/        # REST API handlers
+│   ├── middlewares/        # HTTP middleware
+│   ├── models/             # Domain models
+│   ├── repositories/       # Data access layer
+│   └── usecases/           # Business logic
+├── config/                 # Configuration
+├── container/              # Dependency injection
+├── pkg/                    # Shared packages
+│   ├── cache/              # Cache implementation
+│   ├── datastore/          # Database implementations
+│   ├── logger/             # Logging utilities
+│   ├── message_broker/     # Message broker implementation
+│   ├── otel/               # OpenTelemetry integration
+│   ├── server/             # HTTP/gRPC server
+│   ├── setting/            # Application settings
+│   └── utilities/          # Utility functions
+└── routes/                 # API route definitions
+```
+
 ## Architecture Diagram
 
 ```
