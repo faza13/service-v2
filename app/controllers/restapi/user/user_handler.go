@@ -36,7 +36,11 @@ func (h *UserHandler) Register(c *gin.Context) {
 		return
 	}
 
-	data := h.userUsecase.Register(ctx, &req)
+	data, err := h.userUsecase.Register(ctx, &req)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(200, data)
 }

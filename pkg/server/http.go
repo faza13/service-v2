@@ -17,7 +17,7 @@ type groupsHandlers func(group *gin.RouterGroup, restApi *restapi.Restapi, mid *
 
 func RunHTTPServer(
 	ctx context.Context,
-	cfg *config.Router,
+	cfg *config.Config,
 	tracer trace.Tracer,
 	restApi *restapi.Restapi,
 	mid *middlewares.Middlewares,
@@ -32,13 +32,13 @@ func RunHTTPServer(
 
 	setupMiddlewares(r)
 
-	group := r.Group(cfg.Prefix)
+	group := r.Group(cfg.Rest.Prefix)
 	for i := range groupsHandlers {
 		groupsHandlers[i](group, restApi, mid)
 	}
 
 	s := http.Server{
-		Addr:                         fmt.Sprintf(":%s", cfg.Port),
+		Addr:                         fmt.Sprintf(":%s", cfg.Rest.Port),
 		Handler:                      r,
 		DisableGeneralOptionsHandler: false,
 		//BaseContext: func(net.Listener) context.Context {

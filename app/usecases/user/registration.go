@@ -6,7 +6,7 @@ import (
 	"service/pkg/otel"
 )
 
-func (u *UserUsecase) Registration(ctx context.Context, request *user.RegistrationRequest) (error, map[string]interface{}) {
+func (u *UserUsecase) Register(ctx context.Context, request *user.RegistrationRequest) (interface{}, error) {
 	ctx, span := otel.AddSpan(ctx, "user_usecase.Registration")
 	defer span.End()
 
@@ -16,5 +16,5 @@ func (u *UserUsecase) Registration(ctx context.Context, request *user.Registrati
 		return nil
 	})
 
-	return err, map[string]interface{}{"test": "test"}
+	return map[string]interface{}{"test": "test"}, err
 }

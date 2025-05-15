@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"service/app/controllers/broker"
+	"service/app/controllers/grpc"
 	"service/app/controllers/restapi"
 	"service/app/middlewares"
 	"service/app/repositories"
@@ -27,8 +28,10 @@ func StartApp(ctx context.Context) {
 	db := orm.NewProvider(&cfg.Database)
 	cache := cache.NewCache(ctx, &cfg)
 	esClient := elastic.NewElasticClient(ctx, &cfg)
+	//mongoClient := mongodb.NewMongodb(ctx, &cfg)
 
-	repo := repositories.NewRepositories(db, cache, esClient)
+	repo := repositories.NewRepositories(db, cache, esClient, nil)
+	//repo := repositories.NewRepositories(db, cache, esClient, mongoClient)
 	uc := usecases.NewUsecase(repo)
 	rest := restapi.NewRestapi(uc)
 	mid := middlewares.NewMiddlewares()
@@ -62,6 +65,10 @@ func StartApp(ctx context.Context) {
 		brokerHandler,
 		brokerRouter.NewUserBroker)
 
+	grpxController := grpc.NewGrpc(ctx, uc)
+
+	go server.RunGrpcServer(ctx, &cfg, grpxController)
+
 	// run http server
-	server.RunHTTPServer(ctx, &cfg.Router, tracer, rest, mid, api.NewUserApi, api.NewPermissionApi)
+	server.RunHTTPServer(ctx, &cfg, tracer, rest, mid, api.NewUserApi, api.NewPermissionApi)
 }

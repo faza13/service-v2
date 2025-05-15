@@ -1,6 +1,6 @@
 package config
 
-type Router struct {
+type Rest struct {
 	Prefix string
 	Port   string
 }

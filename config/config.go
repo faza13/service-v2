@@ -4,12 +4,14 @@ type Config struct {
 	App      App      `json:"app"`
 	Database Database `json:"database"`
 	Otel     Otel     `json:"otel"`
-	Router   Router   `json:"router"`
+	Rest     Rest     `json:"router"`
+	Grpc     Grpc     `json:"grpc"`
 	Kafka    Kafka    `json:"kafka"`
 	Setting  Setting  `json:"setting"`
 	Cache    Cache    `json:"cache"`
 	Redis    Redis    `json:"redis"`
 	Elastic  Elastic  `json:"elastic"`
+	Mongodb  Mongodb  `json:"mongodb"`
 }
 
 func NewConfig() Config {
@@ -30,7 +32,7 @@ func NewConfig() Config {
 			ServiceName: "user",
 			HostTempo:   "localhost:4317",
 		},
-		Router: Router{
+		Rest: Rest{
 			Port:   "9000",
 			Prefix: "program",
 		},
@@ -49,6 +51,12 @@ func NewConfig() Config {
 		},
 		Elastic: Elastic{
 			Host: "localhost:9200",
+		},
+		Mongodb: Mongodb{
+			Url:         "localhost:27017",
+			MaxPoolConn: "50",
+			MaxIdleConn: "10",
+			Compression: "snappy",
 		},
 	}
 }

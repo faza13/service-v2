@@ -2,43 +2,52 @@ package mongodb
 
 import (
 	"context"
-	"fmt"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	"go.mongodb.org/mongo-driver/event"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"service/config"
+	"strconv"
+	"strings"
+	"time"
 )
 
-type Orm struct {
-	db *gorm.DB
-}
+func NewMongodb(ctx context.Context, cfg *config.Config) *mongo.Client {
+	var err error
 
-func New(dbCfg *config.Database) *Orm {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		dbCfg.User,
-		dbCfg.Password,
-		dbCfg.Host,
-		dbCfg.Port,
-		dbCfg.Name)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	mongoOptions := options.Client().ApplyURI(cfg.Mongodb.Url)
+	maxPoolConn, _ := strconv.ParseUint(cfg.Mongodb.MaxPoolConn, 10, 64)
+	if maxPoolConn != 0 {
+		mongoOptions.SetMaxPoolSize(maxPoolConn)
+	}
+	maxIdleConn, _ := strconv.ParseUint(cfg.Mongodb.MaxIdleConn, 10, 64)
+	if maxIdleConn != 0 {
+		duration := (time.Duration(maxPoolConn) * time.Hour)
+		mongoOptions.SetMaxConnIdleTime(duration)
+	}
+
+	if cfg.Mongodb.Compression != "" {
+		compression := strings.Split(",", cfg.Mongodb.Compression)
+		mongoOptions.Compressors = compression
+	}
+
+	//.SetMaxPoolSize(50).SetCompressors([]string{"snappy"})
+	if cfg.App.Environment == "development" || cfg.App.Environment == "staging" {
+		cmdMonitor := &event.CommandMonitor{
+			Started: func(_ context.Context, evt *event.CommandStartedEvent) {
+				log.Print(evt.Command)
+			},
+		}
+		mongoOptions.SetMonitor(cmdMonitor)
+	}
+
+	client, err := mongo.Connect(ctx, mongoOptions)
+
 	if err != nil {
-		panic(err)
-	}
-	return &Orm{db: db}
-}
-
-func (d Orm) DB(ctx context.Context) *gorm.DB {
-	if ctx == nil {
-		return d.db
+		log.Fatalf("failed to connect to mongodb: %s", err.Error())
 	}
 
-	return d.db.WithContext(ctx)
-}
-
-func (d Orm) WithTx(ctx context.Context) *gorm.DB {
-	tx, ok := ctx.Value(txCtxKey{}).(*gorm.DB)
-	if ok {
-		return tx
-	}
-
-	return nil
+	return client
 }
