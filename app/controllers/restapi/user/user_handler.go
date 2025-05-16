@@ -1,8 +1,9 @@
 package user
 
 import (
-	"github.com/gin-gonic/gin"
 	"service/pkg/otel"
+
+	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
@@ -15,6 +16,15 @@ func NewUserHandler(userUsecase IUserUsecase) *UserHandler {
 	}
 }
 
+// @Summary Get List
+// @Description get list
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Router /users/list [get]
 func (h *UserHandler) List(c *gin.Context) {
 	ctx, span := otel.AddSpan(c.Request.Context(), "user.get")
 	defer span.End()
