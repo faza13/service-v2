@@ -1,0 +1,31 @@
+info:
+  contact: {}
+paths:
+  /users/list:
+    get:
+      consumes:
+      - application/json
+      description: get list
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get List
+      tags:
+      - users
+swagger: "2.0"
